@@ -48,7 +48,7 @@ def log_hyperpara(logger,opt):
 def train_for_epoch(opt,model,train_loader,test_loader):
     #initialization of saving path
     if opt.SAVE:
-        model_path=os.path.join('../models',
+        model_path=os.path.join('/content/models',
                           '_'.join([opt.MODEL,opt.DATASET]))
         if os.path.exists(model_path)==False:
             os.mkdir(model_path)
@@ -181,7 +181,9 @@ def train_for_epoch(opt,model,train_loader,test_loader):
     logger.write('Maximum epoch: %d' %(max_idx))
     logger.write('\tevaluation auc: %.2f, accuracy: %.2f' % (record_auc[max_idx], 
                                                              record_acc[max_idx]))
-        
+    # torch.save(model.state_dict(), model_path)
+    save_hugging_face(model, '/content')
+    
 def eval_model(opt,model,test_loader):
     scores=0.0
     auc=0.0
