@@ -10,6 +10,11 @@ from sklearn.metrics import roc_auc_score
 from transformers import get_linear_schedule_with_warmup,AdamW
 from dataset import Multimodal_Data
 
+
+def save_hugging_face(model, dirname):
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+    model.save(dirname)    
 def bce_for_loss(logits,labels):
     loss=nn.functional.binary_cross_entropy_with_logits(logits, labels)
     loss*=labels.size(1)
@@ -122,6 +127,7 @@ def train_for_epoch(opt,model,train_loader,test_loader):
     #strat training
     record_auc=[]
     record_acc=[]
+    tmp_auc = 0
     for epoch in range(opt.EPOCHS):
         model.train(True)
         total_loss=0.0
@@ -168,6 +174,9 @@ def train_for_epoch(opt,model,train_loader,test_loader):
             eval_acc,eval_auc=eval_model(opt,model,test_loader)
         else:
             eval_acc,eval_auc=eval_multi_model(opt,model,tokenizer)
+        if eval_auc > tmp_auc:
+            save_hugging_face(model, '/content/drive/MyDrive/prompthate')
+        tmp_auc = eval_auc
         record_auc.append(eval_auc)
         record_acc.append(eval_acc)
         logger.write('Epoch %d' %(epoch))
@@ -182,7 +191,6 @@ def train_for_epoch(opt,model,train_loader,test_loader):
     logger.write('\tevaluation auc: %.2f, accuracy: %.2f' % (record_auc[max_idx], 
                                                              record_acc[max_idx]))
     # torch.save(model.state_dict(), model_path)
-    save_hugging_face(model, '/content')
     
 def eval_model(opt,model,test_loader):
     scores=0.0
