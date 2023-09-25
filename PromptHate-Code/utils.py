@@ -38,6 +38,11 @@ def equal_info(a,b):
 def same_question(a,b):
     assert a==b,'Not the same question!'
     
+def save_hugging_face(model, dirname):
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+    model.save(dirname)    
+    
 class Logger(object):
     def __init__(self,output_dir):
         dirname=os.path.dirname(output_dir)
