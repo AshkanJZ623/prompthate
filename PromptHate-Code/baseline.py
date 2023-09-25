@@ -28,10 +28,10 @@ class RobertaPromptModel(nn.Module):
         logits = torch.cat(logits, -1)
         #print(logits.shape)
         return logits
+    def save(self, filepath):
+        self.roberta.save_pretrained(filepath)
         
     
 def build_baseline(opt,label_list):  
     print (label_list)
     return RobertaPromptModel(label_list)
-
-    
